@@ -24,7 +24,7 @@ motd_dynamic_scripts_backup: true
 motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup_{{ ansible_date_time.iso8601_basic_short }}"
 
 _motd_dynamic_scripts_directory:
-  Debian: "/etc/update-motd.d"
+  default: "/etc/update-motd.d"
 
 motd_type: "{{
   _motd_type[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
