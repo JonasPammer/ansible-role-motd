@@ -16,7 +16,6 @@ endif::[]
 
 // Very Relevant Status Badges
 https://github.com/JonasPammer/ansible-role-motd/actions/workflows/ci.yml[image:https://github.com/JonasPammer/ansible-role-motd/actions/workflows/ci.yml/badge.svg[Testing CI]]
-https://app.fossa.com/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd?ref=badge_shield[image:https://app.fossa.com/api/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd.svg?type=small[FOSSA Licenses Status]]
 
 // Badges about Conventions in this Project
 https://conventionalcommits.org[image:https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg[Conventional Commits]]
@@ -151,6 +150,14 @@ these variables define whether and where a copy of this file should be stored
 before deleting the mentioned file.
 
 
+[[public_vars]]
+== 📜 Facts/Variables defined by this role
+
+Each variable listed in this section
+is dynamically defined when executing this role (and can only be overwritten using `ansible.builtin.set_facts`) _and_
+is meant to be used not just internally.
+
+
 [[dependencies]]
 == 👫 Dependencies
 // A list of other roles should go here,
@@ -226,5 +233,3 @@ Please report any accidental breaking changes of a minor version update.
 ----
 include::LICENSE[]
 ----
-
-https://app.fossa.com/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd?ref=badge_large[image:https://app.fossa.com/api/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd.svg?type=large[FOSSA Licensing Information]]
