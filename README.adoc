@@ -33,7 +33,8 @@ JonasPammer.github.io/ansible-role-motd].__
 endif::[]
 
 
-An Ansible role for configuring login banners on linux machines.
+An Ansible role for configuring either static (traditional) or dynamic
+(using `update-motd` framework) login banners on linux machines.
 
 
 toc::[]
@@ -72,24 +73,82 @@ must be installed on the Ansible controller.
 
 [source,yaml]
 ----
-variable: default value
+motd_type: [OS-specific for v1, see TODO /defaults directory]
 ----
-Description
+The MOTD can be implemented in 2 manners:
 
+"`static`"::
+Generate a single static `/etc/motd` text file and
+dismantle update-motd's scripts so only this file is being shown by `pam_motd`
+(traditional motd).
+
+"`update-motd`"::
+Activate's the `update-motd` functionality
+https://www.systutorials.com/docs/linux/man/5-update-motd/[(nicely described in Ubuntu's MAN Page)],
+by which the motd is dynamically assembled from a collection of scripts
+(at login or periodically through cron).
++
+This role will delete the traditional `/etc/motd` file,
+leaving only the output of the scripts to be included in the assembled motd.
++
+This role will install its own `update-motd` Implementation on systems
+without this functionality built into their version of `pam_motd`.
++
+Additional Relevant Reading Material on the `update-motd` topic:
++
+* https://ownyourbits.com/2017/04/05/customize-your-motd-login-message-in-debian-and-ubuntu/[
+Blog Post describing update-motd's history and implementation details]
+* https://wiki.ubuntu.com/UpdateMotd[UbuntuWiki's Proposal]
 
 [source,yaml]
 ----
-variable: [OS-specific by default, see /vars directory]
+motd_dynamic_scripts_system_packages: [OS-specific, see /defaults directory]
 ----
-Description
-
+Packages to be installed by this role using
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html[Ansible's package module].
 
 [source,yaml]
 ----
-variable: [OS-specific by default, see /vars directory]
+motd_dynamic_scripts_templates:
+  - "00-legal" # in case SSH-Banner didn't show
+  - "10-sysinfo"
 ----
-(Debian/Ubuntu only)
-Description
+Path to Ansible templates ending in `.jinja2` that are to be generated into `motd_dynamic_scripts_directory`.
+
+[NOTE]
+====
+This role comes bundled with some already defined templates.
+To use your own templates, ensure your templates do not wear the exact names
+as the ones in link:templates[this roles' `templates` directory].
+====
+
+[source,yaml]
+----
+motd_dynamic_scripts_directory: [OS-specific by default, see /vars directory]
+----
+Path to store the templated `motd_dynamic_scripts_templates`.
+Must *not* end with `/`.
+
+[source,yaml]
+----
+motd_dynamic_scripts_backup_undefined: true
+motd_dynamic_scripts_backup_undefined_path: "{{ motd_dynamic_scripts_directory }}-backup_{{ ansible_date_time.iso8601_basic_short }}"
+----
+This role ensures that `motd_dynamic_scripts_directory`
+*only* contains the files stated in `motd_dynamic_scripts_templates`.
+
+If this variable is set to true,
+the undefined files will be moved to a new directory with the dynamic name of
+`{{ motd_dynamic_scripts_backup_undefined_path }}`.
+
+[source,yaml]
+----
+motd_static_motd_backup: true
+motd_static_motd_backup_path: "/etc/motd-backup_{{ ansible_date_time.iso8601_basic_short }}"
+----
+If a file with the name `/etc/motd` is found,
+these variables define whether and where a copy of this file should be stored
+before deleting the mentioned file.
 
 
 [[dependencies]]

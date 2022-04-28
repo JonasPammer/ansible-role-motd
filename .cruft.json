@@ -13,7 +13,7 @@
       "allow_duplicates": "no",
       "ansible_user_needs_to_become": "True",
       "role_name": "motd",
-      "project_short_purpose": "configuring login banners on linux machines",
+      "project_short_purpose": "configuring either static (traditional) or dynamic (using `update-motd` framework) login banners on linux machines.",
       "_template": "https://github.com/JonasPammer/cookiecutter-ansible-role.git"
     }
   },

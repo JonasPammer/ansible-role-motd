@@ -1,0 +1,10 @@
+#!/bin/bash
+# {{ ansible_managed }}
+# ---
+{# /etc/update-motd.d/00-legal #}
+
+if ! command -v boxes &> /dev/null; then
+  cat /etc/issue.net
+else
+  boxes -d parchment < /etc/issue.net
+fi

@@ -5,3 +5,11 @@
   ansible.builtin.import_tasks: assert.yml
   run_once: true
   delegate_to: localhost
+
+- name: stat static MOTD file
+  ansible.builtin.stat:
+    path: "/etc/motd"
+  register: motd__register_stat_static_motd_file
+
+- name: Include appropriate Tasks depending on motd_type.
+  ansible.builtin.include_tasks: setup-{{ motd_type }}.yml

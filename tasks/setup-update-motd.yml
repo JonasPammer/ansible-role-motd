@@ -1,0 +1,82 @@
+---
+# tasks file of ansible-role jonaspammer.motd
+
+# TODO add tasks to install a mimic of update-motd's functionality
+#      on systems that don't have Ubuntu's pam_motd patch.
+#      See https://ownyourbits.com/2017/04/05/customize-your-motd-login-message-in-debian-and-ubuntu/
+#      for guidance on how to accomplish / update-motd's parts.
+- name: fail if not ubuntu until update-motd mimic implementation is implemented
+  ansible.builtin.fail:
+  when: ansible_distribution != 'Ubuntu'
+
+- block:
+    - name: Preserve static MOTD file (when exists and preservation configured).
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/etc/motd"
+        dest: "{{ motd_static_motd_backup_path }}"
+      when: motd_static_motd_backup
+    - name: Delete static MOTD file (when distribution is Ubuntu).
+      ansible.builtin.file:
+        path: "/etc/motd"
+        state: absent
+      # TODO uncomment the "when" when the mimicked update-motd (which will symlink /etc/motd
+      #      to mentioned dynamically generated motd.dynamic file) has been implemented
+      # Symlink from `/etc/motd` to `/var/run/motd.dynamic` does not even need to exist anymore
+      # since Ubuntu 16.04 LTS's `pam_motd` implementation of the update-motd functionality
+      # no longer depends on that.
+      # when: ansible_distribution == 'Ubuntu'
+  when: motd__register_stat_static_motd_file.stat.exists
+
+- name: Install tools used in dynamic MOTDs from the system's package manager.
+  ansible.builtin.package:
+    name: "{{ motd_dynamic_scripts_system_packages }}"
+    state: present
+
+- name: find files in dynamic MOTD script directory that should not exist
+  ansible.builtin.find:
+    paths: "{{ motd_dynamic_scripts_directory }}"
+    file_type: file
+    excludes: "{{ motd_dynamic_scripts_templates }}"
+  register: motd__register_find_undefined_dynamic_motd_files
+- block:
+    - name: create preservation directory for dynamic MOTD scripts that should not exist (when exists and preservation configured).
+      ansible.builtin.file:
+        state: directory
+        path: "{{ motd_dynamic_scripts_backup_path }}"
+      register: motd__register_file_dynamic_motd_backup_dir
+    - name: Copy dynamic MOTD files that should not exist into preservation directory (when exists and preservation configured).
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ item.path }}"
+        dest: "{{ motd__register_file_dynamic_motd_backup_dir.path }}/{{ item.path | basename }}"
+      loop: "{{ motd__register_find_undefined_dynamic_motd_files.files }}"
+      loop_control:
+        label: "{{ item.path }}"
+  when: motd_dynamic_scripts_backup and motd__register_find_undefined_dynamic_motd_files.matched != 0
+- name: Delete dynamic MOTD scripts that should not exist.
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ motd__register_find_undefined_dynamic_motd_files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: Create dynamic MOTD scripts directory and ensure correct owner/group.
+  ansible.builtin.file:
+    state: directory
+    path: "{{ motd_dynamic_scripts_directory }}"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+- name: create temporary directory to generate MOTD script templates into
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: "-dynamic-motd-scripts"
+  register: motd__register_tempfile_dynamic_motds
+  changed_when: false
+- name: Include Tasks to generate and copy every dynamic MOTD script template that shellcheck's correctly.
+  ansible.builtin.include_tasks: add-dynamic-script.yml
+  loop: "{{ motd_dynamic_scripts_templates }}"
+  loop_control:
+    loop_var: looped_script_template

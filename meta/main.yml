@@ -1,7 +1,9 @@
 ---
 galaxy_info:
   role_name: "motd"
-  description: "An ansible role for configuring login banners on linux machines."
+  description:
+    "An ansible role for configuring either static (traditional) or dynamic
+    (using `update-motd` framework) login banners on linux machines."
 
   author: "jonaspammer"
   license: MIT
