@@ -213,15 +213,110 @@ image:https://raw.githubusercontent.com/JonasPammer/ansible-roles/master/graphs/
 requirements.yml dependency graph of jonaspammer.motd]
 ====
 
-.Minimum Viable Play
+.Configuring a Dynamic MOTD using the role's built-in templates
 ====
 [source,yaml]
 ----
 roles:
-    - "jonaspammer.motd"
+  - "jonaspammer.motd"
 
 vars:
-    some_var: "some_value"
+  motd_legal_location_name: MY COMPANY INTRA # OPTIONAL variable used by built-in template
+----
+
+Resulting dynamic MOTD (example):
+
+----
+ _____________________________________________________________________________________
+/\                                                                                    \
+\_| You are connecting to the computer system 'srvweb' at MY COMPANY INTRA.           |
+  |                                                                                   |
+  | Any or all uses of this system and all files on this system may be                |
+  | intercepted, monitored, recorded, copied, audited, inspected,                     |
+  | and disclosed to authorized corporation and law enforcement personnel,            |
+  | as well as authorized individuals of other organizations.                         |
+  | By using this system, the user consents to such interception,                     |
+  | monitoring, recording, copying, auditing, inspection,                             |
+  | and disclosure at the discretion of authorized personnel.                         |
+  |                                                                                   |
+  | Unauthorized or improper use of this system may result in                         |
+  | administrative disciplinary action, civil charges/criminal penalties,             |
+  | and/or other sanctions as according to the european codes and/or countries codes. |
+  |                                                                                   |
+  | LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning. |
+  |   ________________________________________________________________________________|_
+   \_/__________________________________________________________________________________/
+
+       _,met$$$$$gg.          user@srvweb
+    ,g$$$$$$$$$$$$$$$P.       ------------ 
+  ,g$$P"     """Y$$.".        OS: Debian GNU/Linux 9.13 (stretch) x86_64 
+ ,$$P'              `$$$.     Model: Standard PC (i440FX + PIIX, 1996) pc-i440f 
+',$$P       ,ggs.     `$$b:   Kernel: 4.9.0-16-amd64 
+`d$$'     ,$P"'   .    $$$    Uptime: 74 days, 19 hours, 42 minutes 
+ $$P      d$'     ,    $$P    Packages: 920 
+ $$:      $$.   -    ,d$$'    Shell: bash 4.4.12 
+ $$;      Y$b._   _,d$P'      Terminal: run-parts 
+ Y$$.    `.`"Y$$$$P"'         CPU: Common KVM (2) @ 1.7GHz 
+ `$$b      "-.__              GPU: Vendor 1234 Device 1111 
+  `Y$$                        Memory: 1858MB / 3955MB 
+   `Y$$.                       
+     `$$b.                    ████████████████████████ 
+       `Y$$b.                  
+          `"Y$b._ 
+              `""" 
+----
+====
+
+.Configuring a Static MOTD using the role's built-in template
+====
+[source,yaml]
+----
+roles:
+  - "jonaspammer.motd"
+
+vars: 
+  motd_type: static
+  motd_legal_location_name: My Company # OPTIONAL variable used by built-in template
+----
+
+Resulting static MOTD (example):
+
+----
+You are connecting to the computer system 'srvweb' at My Company.
+
+Any or all uses of this system and all files on this system may be
+intercepted, monitored, recorded, copied, audited, inspected,
+and disclosed to authorized corporation and law enforcement personnel,
+as well as authorized individuals of other organizations.
+By using this system, the user consents to such interception,
+monitoring, recording, copying, auditing, inspection,
+and disclosure at the discretion of authorized personnel.
+
+Unauthorized or improper use of this system may result in
+administrative disciplinary action, civil charges/criminal penalties,
+and/or other sanctions as according to the european codes and/or countries codes.
+
+LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+----
+====
+
+.Configuring a Static MOTD with own templates
+====
+[source,yaml]
+----
+roles:
+  - "jonaspammer.motd"
+
+vars: 
+  motd_type: static
+  motd_static_motd_template: my-template
+----
+
+.templates/my-template.jinja2
+[source,jinja2]
+----
+{{ ansible_managed | comment }}
+Welcome to {{ ansible_host }}
 ----
 ====
 
