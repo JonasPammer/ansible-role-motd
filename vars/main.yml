@@ -1,3 +1,7 @@
 ---
 # vars file of ansible-role jonaspammer.motd
 # (tl;dr: almost not overwrite-able variables)
+
+
+_motd_dynamic_scripts_directory:
+  default: "/etc/update-motd.d"

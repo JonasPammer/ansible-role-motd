@@ -32,8 +32,10 @@ JonasPammer.github.io/ansible-role-motd].__
 endif::[]
 
 
-An Ansible role for configuring either static (traditional) or dynamic
-(using `update-motd` framework) login banners on linux machines.
+An Ansible role for configuring static and dynamic login banners on linux machines.
+
+For configuring OpenSSH's Banner, see
+https://github.com/JonasPammer/ansible-role-openssh/[ansible-role-openssh].
 
 
 toc::[]
@@ -72,9 +74,9 @@ must be installed on the Ansible controller.
 
 [source,yaml]
 ----
-motd_type: [OS-specific for v1, see TODO /defaults directory]
+motd_type: [OS-specific for v1, see TODO in setup-update-motd.yml]
 ----
-The MOTD can be implemented in 2 manners:
+A MOTD can be implemented in 2 manners:
 
 "`static`"::
 Generate a single static `/etc/motd` text file and
@@ -82,10 +84,10 @@ dismantle update-motd's scripts so only this file is being shown by `pam_motd`
 (traditional motd).
 
 "`update-motd`"::
-Activate's the `update-motd` functionality
+Activate the `update-motd` functionality
 https://www.systutorials.com/docs/linux/man/5-update-motd/[(nicely described in Ubuntu's MAN Page)],
 by which the motd is dynamically assembled from a collection of scripts
-(at login or periodically through cron).
+at login or periodically through the use of a `cron` job.
 +
 This role will delete the traditional `/etc/motd` file,
 leaving only the output of the scripts to be included in the assembled motd.
@@ -98,6 +100,23 @@ Additional Relevant Reading Material on the `update-motd` topic:
 * https://ownyourbits.com/2017/04/05/customize-your-motd-login-message-in-debian-and-ubuntu/[
 Blog Post describing update-motd's history and implementation details]
 * https://wiki.ubuntu.com/UpdateMotd[UbuntuWiki's Proposal]
+
+=== Static MOTD Configuration Variables
+
+[source,yaml]
+----
+motd_static_motd_template: "issue.net"
+----
+Path to Ansible template ending in `.jinja2`.
+
+[NOTE]
+====
+This role comes bundled with a pre-defined legal banner.
+To use your own templates, ensure your template do not wear the exact names
+as the one in link:templates[this roles' `templates` directory].
+====
+
+=== Dynamic MOTD Configuration Variables
 
 [source,yaml]
 ----
@@ -130,24 +149,26 @@ Must *not* end with `/`.
 
 [source,yaml]
 ----
-motd_dynamic_scripts_backup_undefined: true
-motd_dynamic_scripts_backup_undefined_path: "{{ motd_dynamic_scripts_directory }}-backup_{{ ansible_date_time.iso8601_basic_short }}"
+motd_dynamic_scripts_backup: false
+motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup"
 ----
 This role ensures that `motd_dynamic_scripts_directory`
 *only* contains the files stated in `motd_dynamic_scripts_templates`.
 
-If this variable is set to true,
-the undefined files will be moved to a new directory with the dynamic name of
-`{{ motd_dynamic_scripts_backup_undefined_path }}`.
+These variables define whether and where to backup files
+found in the mentioned directory that are not included in the list
+of this role's defined script template names.
 
 [source,yaml]
 ----
-motd_static_motd_backup: true
-motd_static_motd_backup_path: "/etc/motd-backup_{{ ansible_date_time.iso8601_basic_short }}"
+motd_static_motd_backup: false
+motd_static_motd_backup_path: "/etc/motd-backup"
 ----
-If a file with the name `/etc/motd` is found,
-these variables define whether and where a copy of this file should be stored
-before deleting the mentioned file.
+This role ensure's that only the dynamic scripts
+have influence on the resulting motd.
+
+If `/etc/motd` is found to be a normal text file,
+these variables define whether and where to backup this file.
 
 
 [[public_vars]]

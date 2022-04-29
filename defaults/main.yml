@@ -7,8 +7,8 @@ _motd_type:
   default: static # TODO only for now see setup-update-motd.yml
 
 motd_static_motd_template: "issue.net"
-motd_static_motd_backup: true
-motd_static_motd_backup_path: "/etc/motd-backup_{{ ansible_date_time.iso8601_basic_short }}"
+motd_static_motd_backup: false
+motd_static_motd_backup_path: "/etc/motd-backup"
 
 _motd_dynamic_scripts_system_packages:
   Debian:
@@ -16,15 +16,12 @@ _motd_dynamic_scripts_system_packages:
     - neofetch
     - screenfetch
 
-motd_dynamic_delete_static: true
 motd_dynamic_scripts_templates:
   - "00-legal" # in case SSH-Banner didn't show
   - "10-sysinfo"
-motd_dynamic_scripts_backup: true
-motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup_{{ ansible_date_time.iso8601_basic_short }}"
+motd_dynamic_scripts_backup: false
+motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup"
 
-_motd_dynamic_scripts_directory:
-  default: "/etc/update-motd.d"
 
 motd_type: "{{
   _motd_type[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
