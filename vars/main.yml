@@ -2,14 +2,5 @@
 # vars file of ansible-role jonaspammer.motd
 # (tl;dr: almost not overwrite-able variables)
 
-_motd_somevar:
-  Debian: ""
-  Debian_10: ""
-  RedHat: ""
-
-motd_somevar: "{{
-  _motd_somevar[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
-  _motd_somevar[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
-  _motd_somevar[ansible_distribution])|default(
-  _motd_somevar[ansible_os_family])|default(
-  _motd_somevar['default']) }}"
+_motd_dynamic_scripts_directory:
+  default: "/etc/update-motd.d"

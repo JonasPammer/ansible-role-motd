@@ -1,0 +1,16 @@
+{# /etc/issue.net   - Used as BANNER in /etc/ssh/sshd_config and by dynamic MOTD script 00-legal.jinja2.bash #}
+You are connecting to the computer system '{{ ansible_hostname }}'{% if motd_legal_location_name is defined %} at {{ motd_legal_location_name }}{% endif %}.
+
+Any or all uses of this system and all files on this system may be
+intercepted, monitored, recorded, copied, audited, inspected,
+and disclosed to authorized corporation and law enforcement personnel,
+as well as authorized individuals of other organizations.
+By using this system, the user consents to such interception,
+monitoring, recording, copying, auditing, inspection,
+and disclosure at the discretion of authorized personnel.
+
+Unauthorized or improper use of this system may result in
+administrative disciplinary action, civil charges/criminal penalties,
+and/or other sanctions as according to the european codes and/or countries codes.
+
+LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.

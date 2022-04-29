@@ -2,6 +2,7 @@
 roles:
   - name: jonaspammer.bootstrap
   - name: jonaspammer.core_dependencies
+  - name: jonaspammer.shellcheck
 collections:
   - name: community.docker # only needed for molecule execution
   - name: community.general

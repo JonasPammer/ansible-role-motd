@@ -16,7 +16,6 @@ endif::[]
 
 // Very Relevant Status Badges
 https://github.com/JonasPammer/ansible-role-motd/actions/workflows/ci.yml[image:https://github.com/JonasPammer/ansible-role-motd/actions/workflows/ci.yml/badge.svg[Testing CI]]
-https://app.fossa.com/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd?ref=badge_shield[image:https://app.fossa.com/api/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd.svg?type=small[FOSSA Licenses Status]]
 
 // Badges about Conventions in this Project
 https://conventionalcommits.org[image:https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg[Conventional Commits]]
@@ -33,7 +32,10 @@ JonasPammer.github.io/ansible-role-motd].__
 endif::[]
 
 
-An Ansible role for configuring login banners on linux machines.
+An Ansible role for configuring static and dynamic login banners on linux machines.
+
+For configuring OpenSSH's Banner, see
+https://github.com/JonasPammer/ansible-role-openssh/[ansible-role-openssh].
 
 
 toc::[]
@@ -72,24 +74,109 @@ must be installed on the Ansible controller.
 
 [source,yaml]
 ----
-variable: default value
+motd_type: [OS-specific for v1, see TODO in setup-update-motd.yml]
 ----
-Description
+A MOTD can be implemented in 2 manners:
 
+"`static`"::
+Generate a single static `/etc/motd` text file and
+dismantle update-motd's scripts so only this file is being shown by `pam_motd`
+(traditional motd).
+
+"`update-motd`"::
+Activate the `update-motd` functionality
+https://www.systutorials.com/docs/linux/man/5-update-motd/[(nicely described in Ubuntu's MAN Page)],
+by which the motd is dynamically assembled from a collection of scripts
+at login or periodically through the use of a `cron` job.
++
+This role will delete the traditional `/etc/motd` file,
+leaving only the output of the scripts to be included in the assembled motd.
++
+This role will install its own `update-motd` Implementation on systems
+without this functionality built into their version of `pam_motd`.
++
+Additional Relevant Reading Material on the `update-motd` topic:
++
+* https://ownyourbits.com/2017/04/05/customize-your-motd-login-message-in-debian-and-ubuntu/[
+Blog Post describing update-motd's history and implementation details]
+* https://wiki.ubuntu.com/UpdateMotd[UbuntuWiki's Proposal]
+
+=== Static MOTD Configuration Variables
 
 [source,yaml]
 ----
-variable: [OS-specific by default, see /vars directory]
+motd_static_motd_template: "issue.net"
 ----
-Description
+Path to Ansible template ending in `.jinja2`.
 
+[NOTE]
+====
+This role comes bundled with a pre-defined legal banner.
+To use your own templates, ensure your template do not wear the exact names
+as the one in link:templates[this roles' `templates` directory].
+====
+
+=== Dynamic MOTD Configuration Variables
 
 [source,yaml]
 ----
-variable: [OS-specific by default, see /vars directory]
+motd_dynamic_scripts_system_packages: [OS-specific, see /defaults directory]
 ----
-(Debian/Ubuntu only)
-Description
+Packages to be installed by this role using
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/package_module.html[Ansible's package module].
+
+[source,yaml]
+----
+motd_dynamic_scripts_templates:
+  - "00-legal" # in case SSH-Banner didn't show
+  - "10-sysinfo"
+----
+Path to Ansible templates ending in `.jinja2` that are to be generated into `motd_dynamic_scripts_directory`.
+
+[NOTE]
+====
+This role comes bundled with some already defined templates.
+To use your own templates, ensure your templates do not wear the exact names
+as the ones in link:templates[this roles' `templates` directory].
+====
+
+[source,yaml]
+----
+motd_dynamic_scripts_directory: [OS-specific by default, see /vars directory]
+----
+Path to store the templated `motd_dynamic_scripts_templates`.
+Must *not* end with `/`.
+
+[source,yaml]
+----
+motd_dynamic_scripts_backup: false
+motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup"
+----
+This role ensures that `motd_dynamic_scripts_directory`
+*only* contains the files stated in `motd_dynamic_scripts_templates`.
+
+These variables define whether and where to backup files
+found in the mentioned directory that are not included in the list
+of this role's defined script template names.
+
+[source,yaml]
+----
+motd_static_motd_backup: false
+motd_static_motd_backup_path: "/etc/motd-backup"
+----
+This role ensure's that only the dynamic scripts
+have influence on the resulting motd.
+
+If `/etc/motd` is found to be a normal text file,
+these variables define whether and where to backup this file.
+
+
+[[public_vars]]
+== 📜 Facts/Variables defined by this role
+
+Each variable listed in this section
+is dynamically defined when executing this role (and can only be overwritten using `ansible.builtin.set_facts`) _and_
+is meant to be used not just internally.
 
 
 [[dependencies]]
@@ -126,15 +213,110 @@ image:https://raw.githubusercontent.com/JonasPammer/ansible-roles/master/graphs/
 requirements.yml dependency graph of jonaspammer.motd]
 ====
 
-.Minimum Viable Play
+.Configuring a Dynamic MOTD using the role's built-in templates
 ====
 [source,yaml]
 ----
 roles:
-    - "jonaspammer.motd"
+  - "jonaspammer.motd"
 
 vars:
-    some_var: "some_value"
+  motd_legal_location_name: MY COMPANY INTRA # OPTIONAL variable used by built-in template
+----
+
+Resulting dynamic MOTD (example):
+
+----
+ _____________________________________________________________________________________
+/\                                                                                    \
+\_| You are connecting to the computer system 'srvweb' at MY COMPANY INTRA.           |
+  |                                                                                   |
+  | Any or all uses of this system and all files on this system may be                |
+  | intercepted, monitored, recorded, copied, audited, inspected,                     |
+  | and disclosed to authorized corporation and law enforcement personnel,            |
+  | as well as authorized individuals of other organizations.                         |
+  | By using this system, the user consents to such interception,                     |
+  | monitoring, recording, copying, auditing, inspection,                             |
+  | and disclosure at the discretion of authorized personnel.                         |
+  |                                                                                   |
+  | Unauthorized or improper use of this system may result in                         |
+  | administrative disciplinary action, civil charges/criminal penalties,             |
+  | and/or other sanctions as according to the european codes and/or countries codes. |
+  |                                                                                   |
+  | LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning. |
+  |   ________________________________________________________________________________|_
+   \_/__________________________________________________________________________________/
+
+       _,met$$$$$gg.          user@srvweb
+    ,g$$$$$$$$$$$$$$$P.       ------------
+  ,g$$P"     """Y$$.".        OS: Debian GNU/Linux 9.13 (stretch) x86_64
+ ,$$P'              `$$$.     Model: Standard PC (i440FX + PIIX, 1996) pc-i440f
+',$$P       ,ggs.     `$$b:   Kernel: 4.9.0-16-amd64
+`d$$'     ,$P"'   .    $$$    Uptime: 74 days, 19 hours, 42 minutes
+ $$P      d$'     ,    $$P    Packages: 920
+ $$:      $$.   -    ,d$$'    Shell: bash 4.4.12
+ $$;      Y$b._   _,d$P'      Terminal: run-parts
+ Y$$.    `.`"Y$$$$P"'         CPU: Common KVM (2) @ 1.7GHz
+ `$$b      "-.__              GPU: Vendor 1234 Device 1111
+  `Y$$                        Memory: 1858MB / 3955MB
+   `Y$$.
+     `$$b.                    ████████████████████████
+       `Y$$b.
+          `"Y$b._
+              `"""
+----
+====
+
+.Configuring a Static MOTD using the role's built-in template
+====
+[source,yaml]
+----
+roles:
+  - "jonaspammer.motd"
+
+vars:
+  motd_type: static
+  motd_legal_location_name: My Company # OPTIONAL variable used by built-in template
+----
+
+Resulting static MOTD (example):
+
+----
+You are connecting to the computer system 'srvweb' at My Company.
+
+Any or all uses of this system and all files on this system may be
+intercepted, monitored, recorded, copied, audited, inspected,
+and disclosed to authorized corporation and law enforcement personnel,
+as well as authorized individuals of other organizations.
+By using this system, the user consents to such interception,
+monitoring, recording, copying, auditing, inspection,
+and disclosure at the discretion of authorized personnel.
+
+Unauthorized or improper use of this system may result in
+administrative disciplinary action, civil charges/criminal penalties,
+and/or other sanctions as according to the european codes and/or countries codes.
+
+LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+----
+====
+
+.Configuring a Static MOTD with own templates
+====
+[source,yaml]
+----
+roles:
+  - "jonaspammer.motd"
+
+vars:
+  motd_type: static
+  motd_static_motd_template: my-template
+----
+
+.templates/my-template.jinja2
+[source,jinja2]
+----
+{{ ansible_managed | comment }}
+Welcome to {{ ansible_host }}
 ----
 ====
 
@@ -167,5 +349,3 @@ Please report any accidental breaking changes of a minor version update.
 ----
 include::LICENSE[]
 ----
-
-https://app.fossa.com/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd?ref=badge_large[image:https://app.fossa.com/api/projects/git%2Bgithub.com%2FJonasPammer%2Fansible-role-motd.svg?type=large[FOSSA Licensing Information]]

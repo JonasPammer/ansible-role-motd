@@ -1,0 +1,36 @@
+---
+# tasks file of ansible-role jonaspammer.motd
+
+# TODO use ansible-integrated way of doing this.
+#      https://docs.ansible.com/ansible/devel/reference_appendices/faq.html#the-validate-option-is-not-enough-for-my-needs-what-do-i-do
+- name: Generate dynamic MOTD script '{{ looped_script_template }}' and ensure correct owner/group/mode.
+  ansible.builtin.template:
+    src: "{{ looped_script_template }}.jinja2"
+    dest: "{{ motd__register_tempfile_dynamic_motds.path }}/{{ looped_script_template }}"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  changed_when: false # reason: tempfile
+
+- name: ShellCheck templated motd script  '{{ looped_script_template }}' (--severity=error).
+  ansible.builtin.shell: "shellcheck {{ motd__register_tempfile_dynamic_motds.path }}/{{ looped_script_template }} --severity=error"
+  changed_when: false
+  ignore_errors: true
+  register: motd__register_shell_shellcheck
+
+- name: Print warning message if shellcheck of '{{ looped_script_template }}' error'd.
+  ansible.builtin.fail:
+    msg: "Warning: '{{ looped_script_template }}' contains shellcheck errors - not adding to dynamic motd scripts directory!"
+  ignore_errors: true
+  when: motd__register_shell_shellcheck.rc != 0
+
+# shellcheck ok:
+- name: Copy generated dynamic MOTD script  '{{ looped_script_template }}' to actual directory and ensure correct owner/group/mode.
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ motd__register_tempfile_dynamic_motds.path }}/{{ looped_script_template }}"
+    dest: "{{ motd_dynamic_scripts_directory }}/{{ looped_script_template }}"
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  when: motd__register_shell_shellcheck.rc == 0
