@@ -3,8 +3,13 @@
 # ---
 {# /etc/update-motd.d/00-legal #}
 
+temp_file=$(mktemp)
+cat << EOFHEREDOC > "$temp_file"
+{% include 'templates/issue.net.jinja2' | replace('HEREDOC', 'EOF HEREDOC') %}
+EOFHEREDOC
+
 if ! command -v boxes &> /dev/null; then
-  cat /etc/issue.net
+  cat "${temp_file}"
 else
-  boxes -d parchment < /etc/issue.net
+  boxes -d parchment < "${temp_file}"
 fi
