@@ -248,22 +248,22 @@ Resulting dynamic MOTD (example):
    \_/__________________________________________________________________________________/
 
        _,met$$$$$gg.          user@srvweb
-    ,g$$$$$$$$$$$$$$$P.       ------------ 
-  ,g$$P"     """Y$$.".        OS: Debian GNU/Linux 9.13 (stretch) x86_64 
- ,$$P'              `$$$.     Model: Standard PC (i440FX + PIIX, 1996) pc-i440f 
-',$$P       ,ggs.     `$$b:   Kernel: 4.9.0-16-amd64 
-`d$$'     ,$P"'   .    $$$    Uptime: 74 days, 19 hours, 42 minutes 
- $$P      d$'     ,    $$P    Packages: 920 
- $$:      $$.   -    ,d$$'    Shell: bash 4.4.12 
- $$;      Y$b._   _,d$P'      Terminal: run-parts 
- Y$$.    `.`"Y$$$$P"'         CPU: Common KVM (2) @ 1.7GHz 
- `$$b      "-.__              GPU: Vendor 1234 Device 1111 
-  `Y$$                        Memory: 1858MB / 3955MB 
-   `Y$$.                       
-     `$$b.                    ████████████████████████ 
-       `Y$$b.                  
-          `"Y$b._ 
-              `""" 
+    ,g$$$$$$$$$$$$$$$P.       ------------
+  ,g$$P"     """Y$$.".        OS: Debian GNU/Linux 9.13 (stretch) x86_64
+ ,$$P'              `$$$.     Model: Standard PC (i440FX + PIIX, 1996) pc-i440f
+',$$P       ,ggs.     `$$b:   Kernel: 4.9.0-16-amd64
+`d$$'     ,$P"'   .    $$$    Uptime: 74 days, 19 hours, 42 minutes
+ $$P      d$'     ,    $$P    Packages: 920
+ $$:      $$.   -    ,d$$'    Shell: bash 4.4.12
+ $$;      Y$b._   _,d$P'      Terminal: run-parts
+ Y$$.    `.`"Y$$$$P"'         CPU: Common KVM (2) @ 1.7GHz
+ `$$b      "-.__              GPU: Vendor 1234 Device 1111
+  `Y$$                        Memory: 1858MB / 3955MB
+   `Y$$.
+     `$$b.                    ████████████████████████
+       `Y$$b.
+          `"Y$b._
+              `"""
 ----
 ====
 
@@ -274,7 +274,7 @@ Resulting dynamic MOTD (example):
 roles:
   - "jonaspammer.motd"
 
-vars: 
+vars:
   motd_type: static
   motd_legal_location_name: My Company # OPTIONAL variable used by built-in template
 ----
@@ -307,7 +307,7 @@ LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning
 roles:
   - "jonaspammer.motd"
 
-vars: 
+vars:
   motd_type: static
   motd_static_motd_template: my-template
 ----

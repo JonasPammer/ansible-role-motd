@@ -22,7 +22,6 @@ motd_dynamic_scripts_templates:
 motd_dynamic_scripts_backup: false
 motd_dynamic_scripts_backup_path: "{{ motd_dynamic_scripts_directory }}-backup"
 
-
 motd_type: "{{
   _motd_type[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
   _motd_type[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
