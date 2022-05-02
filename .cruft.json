@@ -1,18 +1,19 @@
 {
   "template": "https://github.com/JonasPammer/cookiecutter-ansible-role.git",
-  "commit": "dc270eefaaf9901755c87969047f42f97cd04470",
+  "commit": "b5c93c9d90b5f00daa5c8afdc8b682c47f84a291",
   "checkout": null,
   "context": {
     "cookiecutter": {
       "full_name": "Jonas Pammer",
       "email": "opensource@jonaspammer.at",
       "code_of_conduct_enforcement_contact_email": "opensource@jonaspammer.at",
-      "github_user": "JonasPammer",
+      "github_username": "JonasPammer",
       "galaxy_name": "jonaspammer",
       "min_ansible_version": "2.9",
       "allow_duplicates": "no",
       "ansible_user_needs_to_become": "True",
       "role_name": "motd",
+      "project_slug": "ansible-role-motd",
       "project_short_purpose": "configuring either static (traditional) or dynamic (using `update-motd` framework) login banners on linux machines.",
       "_template": "https://github.com/JonasPammer/cookiecutter-ansible-role.git"
     }
