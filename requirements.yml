@@ -2,6 +2,7 @@
 roles:
   - name: jonaspammer.bootstrap
   - name: jonaspammer.core_dependencies
+    __not_mandatory_to_role_itself: true # used by JonasPammer/ansible-roles. not part of requirements.yml syntax
   - name: jonaspammer.shellcheck
 collections:
   - name: community.docker # only needed for molecule execution
