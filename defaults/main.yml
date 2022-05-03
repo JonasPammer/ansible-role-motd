@@ -15,6 +15,9 @@ _motd_dynamic_scripts_system_packages:
     - boxes
     - neofetch
     - screenfetch
+  Ubuntu_16:
+    - boxes
+    - screenfetch
 
 motd_dynamic_scripts_templates:
   - "00-legal" # in case SSH-Banner didn't show
