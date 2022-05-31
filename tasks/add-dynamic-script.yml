@@ -21,7 +21,8 @@
 - name: Print warning message if shellcheck of '{{ looped_script_template }}' error'd.
   ansible.builtin.fail:
     msg: "Warning: '{{ looped_script_template }}' contains shellcheck errors - not adding to dynamic motd scripts directory!"
-  ignore_errors: true
+  # fail (to still add an error) but do not exit entire play just because one script did not get included
+  ignore_errors: true # noqa ignore-errors
   when: motd__register_command_shellcheck.rc != 0
 
 # shellcheck ok:
