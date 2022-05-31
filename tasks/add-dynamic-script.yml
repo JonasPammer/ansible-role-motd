@@ -13,16 +13,16 @@
   changed_when: false # reason: tempfile
 
 - name: ShellCheck templated motd script  '{{ looped_script_template }}' (--severity=error).
-  ansible.builtin.shell: "shellcheck {{ motd__register_tempfile_dynamic_motds.path }}/{{ looped_script_template }} --severity=error"
+  ansible.builtin.command: "shellcheck '{{ motd__register_tempfile_dynamic_motds.path }}/{{ looped_script_template }}' --severity=error"
   changed_when: false
   ignore_errors: true
-  register: motd__register_shell_shellcheck
+  register: motd__register_command_shellcheck
 
 - name: Print warning message if shellcheck of '{{ looped_script_template }}' error'd.
   ansible.builtin.fail:
     msg: "Warning: '{{ looped_script_template }}' contains shellcheck errors - not adding to dynamic motd scripts directory!"
   ignore_errors: true
-  when: motd__register_shell_shellcheck.rc != 0
+  when: motd__register_command_shellcheck.rc != 0
 
 # shellcheck ok:
 - name: Copy generated dynamic MOTD script  '{{ looped_script_template }}' to actual directory and ensure correct owner/group/mode.
@@ -33,4 +33,4 @@
     owner: root
     group: root
     mode: u=rwx,g=rx,o=rx
-  when: motd__register_shell_shellcheck.rc == 0
+  when: motd__register_command_shellcheck.rc == 0
