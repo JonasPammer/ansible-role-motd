@@ -19,6 +19,9 @@
         remote_src: true
         src: "{{ motd_dynamic_scripts_directory }}"
         dest: "{{ motd_dynamic_scripts_backup_path }}"
+        owner: root
+        group: root
+        mode: u=rwx,g=,o=
     - name: Delete dynamic MOTD script directory.
       ansible.builtin.file:
         path: "{{ motd_dynamic_scripts_directory }}"

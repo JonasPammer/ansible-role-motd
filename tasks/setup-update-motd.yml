@@ -15,6 +15,9 @@
         remote_src: true
         src: "/etc/motd"
         dest: "{{ motd_static_motd_backup_path }}"
+        owner: root
+        group: root
+        mode: u=rw,g=,o=
       when: motd_static_motd_backup
     - name: Delete static MOTD file (when distribution is Ubuntu).
       ansible.builtin.file:
@@ -44,12 +47,18 @@
       ansible.builtin.file:
         state: directory
         path: "{{ motd_dynamic_scripts_backup_path }}"
+        owner: root
+        group: root
+        mode: u=rw,g=,o=
       register: motd__register_file_dynamic_motd_backup_dir
     - name: Copy dynamic MOTD files that should not exist into preservation directory (when exists and preservation configured).
       ansible.builtin.copy:
         remote_src: true
         src: "{{ item.path }}"
         dest: "{{ motd__register_file_dynamic_motd_backup_dir.path }}/{{ item.path | basename }}"
+        owner: root
+        group: root
+        mode: u=rw,g=,o=
       loop: "{{ motd__register_find_undefined_dynamic_motd_files.files }}"
       loop_control:
         label: "{{ item.path }}"
