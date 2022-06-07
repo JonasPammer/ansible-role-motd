@@ -40,8 +40,8 @@ motd_dynamic_scripts_system_packages: "{{
   _motd_dynamic_scripts_system_packages['default']) }}"
 
 motd_dynamic_scripts_directory: "{{
-  _motd_dynamic_scripts_directory[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
-  _motd_dynamic_scripts_directory[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
-  _motd_dynamic_scripts_directory[ansible_distribution])|default(
-  _motd_dynamic_scripts_directory[ansible_os_family])|default(
-  _motd_dynamic_scripts_directory['default']) }}"
+  _motd__dynamic_scripts_directory[ansible_distribution ~ '_' ~ ansible_distribution_major_version]|default(
+  _motd__dynamic_scripts_directory[ansible_os_family ~ '_' ~ ansible_distribution_major_version])|default(
+  _motd__dynamic_scripts_directory[ansible_distribution])|default(
+  _motd__dynamic_scripts_directory[ansible_os_family])|default(
+  _motd__dynamic_scripts_directory['default']) }}"
