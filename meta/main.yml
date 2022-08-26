@@ -6,7 +6,7 @@ galaxy_info:
     (using `update-motd` framework) login banners on linux machines."
 
   author: "jonaspammer"
-  license: MIT
+  license: "MIT"
 
   min_ansible_version: "2.11"
   platforms:
