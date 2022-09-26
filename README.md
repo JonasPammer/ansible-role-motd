@@ -22,6 +22,7 @@ Below you can find information on…
       description:
         "An ansible role for configuring either static (traditional) or dynamic
         (using `update-motd` framework) login banners on linux machines."
+      standalone: true
 
       author: "jonaspammer"
       license: "MIT"
