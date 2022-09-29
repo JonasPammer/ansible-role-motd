@@ -13,7 +13,9 @@
   ansible.builtin.stat:
     path: "{{ motd_dynamic_scripts_directory }}"
   register: motd__register_stat_dynamic_motd_directory
-- block:
+
+- when: motd__register_stat_dynamic_motd_directory.stat.exists
+  block:
     - name: Copy dynamic MOTD files into preservation directory (when exists and preservation configured).
       ansible.builtin.copy:
         remote_src: true
@@ -26,4 +28,3 @@
       ansible.builtin.file:
         path: "{{ motd_dynamic_scripts_directory }}"
         state: absent
-  when: motd__register_stat_dynamic_motd_directory.stat.exists
