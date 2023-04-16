@@ -16,7 +16,7 @@
       "min_ansible_version": "2.11",
       "allow_duplicates": "no",
       "ansible_user_needs_to_become": "True",
-      "use_renovate": "False",
+      "use_renovate": "y",
       "role_name": "motd",
       "project_slug": "ansible-role-motd",
       "project_short_purpose": "configuring either static (traditional) or dynamic (using `update-motd` framework) login banners on linux machines.",
