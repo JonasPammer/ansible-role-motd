@@ -3,4 +3,4 @@
   hosts: all
 
   roles:
-    - name: "ansible-role-motd"
+    - role: "ansible-role-motd"
